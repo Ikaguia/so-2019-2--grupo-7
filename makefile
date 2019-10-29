@@ -10,7 +10,7 @@ HPP_FILES = $(wildcard $(HEADER_PATH)/*.hpp)
 
 DIRECTIVES = -std=c++11 -Wall -Wextra -Wno-unused-result -c -I$(HEADER_PATH) -O2
 
-EXEC = pseudo-so
+EXEC = pseudo-so.out
 
 
 
