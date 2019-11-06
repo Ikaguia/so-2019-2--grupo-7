@@ -48,6 +48,6 @@ void processos::adiciona(int tempo){
 		pq.pop();
 		if(v[pid].prioridade) filas::usuario[v[pid].prioridade-1].push(pid);
 		else filas::tempo_real.push(pid);
-		cout << "Inicializando " << processos::v[pid].to_str() << endl;
+		cout << tempo << " Inicializando " << processos::v[pid].to_str() << endl;
 	}
 }
