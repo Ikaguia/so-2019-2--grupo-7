@@ -10,17 +10,35 @@ int main(int argc, char **argv){
 
 	processos::le_arquivo(argv[1]);
 
+	int processo_atual = -1;
+	queue<int> *fila_retro = nullptr;
+
 	FOR(tempo, 0, 1000000000){
+		//verifica se tem processos que são inicializados no tempo atual
 		processos::adiciona(tempo);
-		auto [pid, retro] = filas::proximo();
-		if(pid == -1){
-			if(processos::pq.empty()) break;
-			cout << tempo << " IDLE\n";
+		if(processo_atual == -1){//se o ultimo processo foi interrompido
+			//processo a ser executado, fila onde ele vai ser retroalimentado
+			tie(processo_atual, fila_retro) = filas::proximo();
+		}
+		if(processo_atual == -1){//não tem processo na fila de prontos
+			if(processos::pq.empty()) break;//não tem processos com tempo de inicialização maior que o atual
+			else cout << tempo << " IDLE\n";
 		}
 		else{
 			cout << tempo << " ";
-			bool acabou = processos::v[pid].executa();
-			if(not acabou) retro.push(pid);
+			//executa o processo atual, e verifica se ele terminuou
+			bool acabou = processos::v[processo_atual].executa();
+			if(not acabou){ //se o processo nao acabou
+				if(processos::v[processo_atual].prioridade != 0){ //se ele foi 'preemptado'
+					fila_retro->push(processo_atual); //adiciona ele na sua fila de retroalimentação
+					processo_atual = -1;
+					fila_retro = nullptr;
+				}
+			}
+			else{ //se o processo acabou
+				processo_atual = -1;
+				fila_retro = nullptr;
+			}
 		}
 	}
 

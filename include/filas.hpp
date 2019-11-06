@@ -6,7 +6,7 @@
 struct filas{
 	static queue<int> tempo_real;
 	static queue<int> usuario[3];
-	static pair<int, queue<int>&> proximo();
+	static pair<int, queue<int>*> proximo();
 };
 
 #endif//MODULO_FILAS

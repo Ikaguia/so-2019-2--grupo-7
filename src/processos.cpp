@@ -20,10 +20,10 @@ processo::processo(const string &line){
 
 string processo::to_str(){
 	ostringstream str;
-	str << "{ " << pid;
-	if(not prioridade) str << ", tempo_real";
-	else str << ", usuario[" << prioridade-1 << "]";
-	str << ", (" << exec << "/" << t_proc << ") }";
+	str << "{ pid::" << pid;
+	if(not prioridade) str << ", prioridade::tempo_real";
+	else str << ", prioridade::usuario-" << prioridade-1;
+	str << ", exec::(" << exec << "/" << t_proc << ") }";
 	return str.str();
 }
 
@@ -48,5 +48,6 @@ void processos::adiciona(int tempo){
 		pq.pop();
 		if(v[pid].prioridade) filas::usuario[v[pid].prioridade-1].push(pid);
 		else filas::tempo_real.push(pid);
+		cout << "Inicializando " << processos::v[pid].to_str() << endl;
 	}
 }
