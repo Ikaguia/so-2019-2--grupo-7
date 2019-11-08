@@ -46,8 +46,18 @@ void processos::adiciona(int tempo){
 	while(not pq.empty() and (-pq.top().first) <= tempo){
 		int pid = pq.top().second;
 		pq.pop();
+
+		cout << tempo << " Inicializando " << processos::v[pid].to_str() << endl;
+
+		int processos = filas::tempo_real.size();
+		FOR(i, 0, 3) processos += filas::usuario[i].size();
+
+		if(processos >= processos::MAX_PROCESSOS){
+			cout << tempo << " Erro: Não há espaço nas fila de pronto (" << processos::MAX_PROCESSOS << "/" << processos::MAX_PROCESSOS << ")" << endl;
+			continue;
+		}
+
 		if(v[pid].prioridade) filas::usuario[v[pid].prioridade-1].push(pid);
 		else filas::tempo_real.push(pid);
-		cout << tempo << " Inicializando " << processos::v[pid].to_str() << endl;
 	}
 }

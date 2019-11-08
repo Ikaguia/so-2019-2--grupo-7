@@ -17,6 +17,7 @@ public:
 
 class processos{
 public:
+	static const int MAX_PROCESSOS = 1000;
 	static vector<processo> v;
 	static priority_queue<pair<int, int>> pq;
 	static void le_arquivo(const string &nome_arquivo);

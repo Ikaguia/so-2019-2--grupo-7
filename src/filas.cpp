@@ -9,13 +9,14 @@ pair<int, queue<int>*> filas::proximo(){
 	if(not tempo_real.empty()){
 		pid = tempo_real.front();
 		tempo_real.pop();
-		return {pid, &tempo_real};
+		return {pid, nullptr};
 	}
 	else{
 		FOR(prioridade, 0, 3){
 			if(not usuario[prioridade].empty()){
 				pid = usuario[prioridade].front();
 				usuario[prioridade].pop();
+				// Envelhecimento (abaixa a prioridade)
 				return {pid, &usuario[min(2, prioridade+1)]};
 			}
 		}
