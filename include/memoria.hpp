@@ -8,6 +8,7 @@ namespace Memoria{
 	extern list<pair<int, int>> mem[2];
 	void Init();
 	int AlocaBloco(int tamanho, Tipo tipo, int pid);
+	void DesalocaBloco(int posicao, Tipo tipo, int pid);
 };
 
 #endif//MODULO_MEMORIA

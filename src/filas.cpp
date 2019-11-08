@@ -1,5 +1,5 @@
-#include <Filas.hpp>
-#include <Processos.hpp>
+#include <filas.hpp>
+#include <processos.hpp>
 
 queue<int> Filas::tempo_real;
 queue<int> Filas::usuario[3];

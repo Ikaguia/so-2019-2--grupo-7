@@ -1,5 +1,5 @@
-#include <Processos.hpp>
-#include <Filas.hpp>
+#include <processos.hpp>
+#include <filas.hpp>
 
 Processo::Processo(const string &line){
 	pid = Processos::proc.size();

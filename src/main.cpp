@@ -1,6 +1,6 @@
 #include <common.hpp>
-#include <Filas.hpp>
-#include <Processos.hpp>
+#include <filas.hpp>
+#include <processos.hpp>
 
 int main(int argc, char **argv){
 
