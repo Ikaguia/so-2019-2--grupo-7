@@ -27,9 +27,9 @@ int main(int argc, char **argv){
 		else{
 			cout << tempo << " ";
 			//executa o processo atual, e verifica se ele terminuou
-			bool acabou = processos::v[processo_atual].executa();
+			bool acabou = processos::proc[processo_atual].executa();
 			if(not acabou){
-				if(processos::v[processo_atual].prioridade != 0){ // Proc. de usuario deve ser preemptado
+				if(processos::proc[processo_atual].prioridade != 0){ // Proc. de usuario deve ser preemptado
 					fila_retro->push(processo_atual); //adiciona ele na sua fila de retroalimentação
 					processo_atual = -1;
 					fila_retro = nullptr;

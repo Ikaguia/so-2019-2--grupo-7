@@ -2,7 +2,7 @@
 #include <filas.hpp>
 
 processo::processo(const string &line){
-	pid = processos::v.size();
+	pid = processos::proc.size();
 	char c;
 	istringstream in(line);
 	in >> t_init >> c;
@@ -35,19 +35,19 @@ bool processo::executa(){
 
 
 
-vector<processo> processos::v;
+vector<processo> processos::proc;
 priority_queue<pair<int, int>> processos::pq;
 void processos::le_arquivo(const string &nome_arquivo){
 	ifstream arquivo(nome_arquivo);
 	string linha;
-	while(getline(arquivo, linha)) v.emplace_back(linha);
+	while(getline(arquivo, linha)) proc.emplace_back(linha);
 }
 void processos::adiciona(int tempo){
 	while(not pq.empty() and (-pq.top().first) <= tempo){
 		int pid = pq.top().second;
 		pq.pop();
 
-		cout << tempo << " Inicializando " << processos::v[pid].to_str() << endl;
+		cout << tempo << " Inicializando " << processos::proc[pid].to_str() << endl;
 
 		int processos = filas::tempo_real.size();
 		FOR(i, 0, 3) processos += filas::usuario[i].size();
@@ -57,7 +57,7 @@ void processos::adiciona(int tempo){
 			continue;
 		}
 
-		if(v[pid].prioridade) filas::usuario[v[pid].prioridade-1].push(pid);
+		if(processos::proc[pid].prioridade) filas::usuario[processos::proc[pid].prioridade-1].push(pid);
 		else filas::tempo_real.push(pid);
 	}
 }

@@ -17,7 +17,7 @@ pair<int, queue<int>*> filas::proximo(){
 				pid = usuario[prioridade].front();
 				usuario[prioridade].pop();
 				// Envelhecimento (abaixa a prioridade)
-				return {pid, &usuario[min(2, prioridade+1)]};
+				return {pid, &usuario[min(filas::N_QUEUE - 1, prioridade+1)]};
 			}
 		}
 	}
