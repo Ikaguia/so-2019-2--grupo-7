@@ -14,9 +14,11 @@ struct Processo{
 	/// Para debug.
 	string to_str();
 
-	// Caso funcione, aloca recursos e retorna true.
-	// Retorna false caso contrário
-	bool inicializa();
+	// Aloca recursos.	
+	void inicializa();
+
+  // Checa se tem todos os recursos disponiveis para uso
+  bool pode_inicializar();
 
 	// Desaloca os recursos
 	void termina();
@@ -31,7 +33,7 @@ struct Processos{
 public:
 	static const int MAX_PROCESSOS = 1000;
 	static vector<Processo> proc;
-	static priority_queue<pair<int, int>> pq;
+	static priority_queue<pair<int, int>> not_initialized, bloqueados;
 
 	/// Inicializa fila de processos
 	static void le_arquivo(const string &nome_arquivo);

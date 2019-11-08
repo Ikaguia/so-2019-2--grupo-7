@@ -27,7 +27,7 @@ int main(int argc, char **argv){
 			tie(processo_atual, fila_retro) = Filas::proximo();
 		}
 		if(processo_atual == -1){//não tem Processo na fila de prontos
-			if(Processos::pq.empty()) break;//não tem Processos com tempo de inicialização maior que o atual
+			if(Processos::not_initialized.empty()) break;//não tem Processos com tempo de inicialização maior que o atual
 			else cout << tempo_execucao << " IDLE\n";
 		}
 		else{

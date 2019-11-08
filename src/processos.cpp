@@ -16,7 +16,7 @@ Processo::Processo(const string &line){
 	in >> this->disco;
 
 	//fila de prioridade com os Processos, para serem adicionados no tempo correto
-	Processos::pq.emplace(-this->t_init, this->pid);
+	Processos::not_initialized.emplace(-this->t_init, this->pid);
 }
 
 string Processo::to_str(){
@@ -30,8 +30,17 @@ string Processo::to_str(){
 	return str.str();
 }
 
-bool Processo::inicializa(){
+void Processo::inicializa() {
 	cout << tempo_execucao << " Inicializando " << this->to_str() << endl;
+	this->endereco = Memoria::aloca_intervalo(this->blocos,
+		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL, pid);
+
+  //Seta o estado
+  this->estado = Processo::Estado::PRONTO;
+}
+
+
+bool Processo::pode_inicializar(){
 
 	//Checa se há espaço nas filas de pronto
 	int processos_count = Filas::tempo_real.size();
@@ -42,17 +51,17 @@ bool Processo::inicializa(){
 		return false;
 	}
 	//Checa se há memória disponível
-	this->endereco = Memoria::aloca_intervalo(this->blocos,
-		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL, pid);
-	if(this->endereco == -1){
-		cout << tempo_execucao << " Erro: Não há memória suficiente disponível." << endl;
+	int endereco = Memoria::procura_intervalo(this->blocos,
+		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL);
+	
+  if(endereco == -1){
+		cout << tempo_execucao << " pid::" << this->pid << " Erro: Não há memória suficiente disponível." << endl;
 		return false;
 	}
-	//Seta o estado
-	this->estado = Processo::Estado::PRONTO;
-
+  // TODO: testar recursos!
 	return true;
 }
+
 void Processo::termina(){
 	//Libera a memória
 	Memoria::desaloca_intervalo(this->endereco,
@@ -64,9 +73,9 @@ void Processo::termina(){
 }
 
 bool Processo::executa(){
+	cout << "Executando " << this->to_str() << "\n";
 	assert(this->estado == Processo::Estado::PRONTO);
 	this->exec++;
-	cout << "Executando " << this->to_str() << "\n";
 	if(this->exec == this->t_proc)
     this->termina();
   return this->estado == Processo::Estado::TERMINOU;
@@ -75,22 +84,34 @@ bool Processo::executa(){
 
 
 vector<Processo> Processos::proc;
-priority_queue<pair<int, int>> Processos::pq;
+priority_queue<pair<int, int>> Processos::not_initialized;
+priority_queue<pair<int, int>> Processos::bloqueados;
+
 void Processos::le_arquivo(const string &nome_arquivo){
 	ifstream arquivo(nome_arquivo);
 	string linha;
 	while(getline(arquivo, linha)) proc.emplace_back(linha);
 }
 void Processos::adiciona(){
-	while(not pq.empty() and (-pq.top().first) <= tempo_execucao){
-		int pid = pq.top().second;
-		pq.pop();
+	while(not not_initialized.empty() and (-not_initialized.top().first) <= tempo_execucao){
+		int pid = not_initialized.top().second;
+		not_initialized.pop();
 
 		auto &processo = Processos::proc[pid];
 
-		if(not processo.inicializa()) continue;
+		if(not processo.pode_inicializar()) {
+      processo.estado = Processo::Estado::BLOQUEADO;
+      Processos::bloqueados.emplace( -processo.prioridade, pid );
+    }
+    else {
+      processo.inicializa();
+      if(processo.prioridade) {
+        Filas::usuario[processo.prioridade-1].push(pid);
+      }
+      else {
+        Filas::tempo_real.push(pid);
+      }
+    }
 
-		if(processo.prioridade) Filas::usuario[processo.prioridade-1].push(pid);
-		else Filas::tempo_real.push(pid);
 	}
 }

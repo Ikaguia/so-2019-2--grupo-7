@@ -6,6 +6,7 @@ namespace Memoria{
 		intervalos[TEMPO_REAL].emplace_back(64, -1);
 		intervalos[USUARIO].emplace_back(960, -1);
 	}
+  // TODO: fazer direito ou apagar esse TODO
 	int aloca_intervalo(int tamanho, Tipo tipo, int pid){
 		int posicao = 0;
 		for(auto it = intervalos[tipo].begin(); it != intervalos[tipo].end(); it++){
@@ -19,6 +20,18 @@ namespace Memoria{
 					intervalos[tipo].emplace(it, tamanho, pid);
 					intervalo.first -= tamanho;
 				}
+				return posicao;
+			}
+			posicao += intervalo.first;
+		}
+		return -1;
+	}
+	int procura_intervalo(int tamanho, Tipo tipo){
+		int posicao = 0;
+		for(auto it = intervalos[tipo].begin(); it != intervalos[tipo].end(); it++){
+			pair<int, int> &intervalo = *it;
+			// intervalo do tamanho necessário e desocupado
+			if(intervalo.first >= tamanho and intervalo.second == -1){
 				return posicao;
 			}
 			posicao += intervalo.first;
@@ -56,5 +69,7 @@ namespace Memoria{
 			posicao_atual += intervalo.first;
 		}
 	}
+
+  queue<int> processos_bloqueados;
 };
 
