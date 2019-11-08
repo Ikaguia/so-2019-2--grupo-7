@@ -69,7 +69,5 @@ namespace Memoria{
 			posicao_atual += intervalo.first;
 		}
 	}
-
-  queue<int> processos_bloqueados;
 };
 

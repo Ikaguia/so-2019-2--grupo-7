@@ -37,6 +37,14 @@ int main(int argc, char **argv){
 			if(acabou){
 				processo_atual = -1;
 				fila_retro = nullptr;
+        for(auto it = Processos::bloqueados.begin();it != Processos::bloqueados.end();){
+          int pid = it->second;
+          if(Processos::proc[pid].pode_inicializar()){
+            Processos::proc[pid].inicializa();
+            it = Processos::bloqueados.erase(it);
+          }
+          else it++;
+        }
 			}
 			else if(Processos::proc[processo_atual].prioridade != 0){ // Proc. de usuario deve ser preemptado
 				fila_retro->push(processo_atual); //adiciona ele na sua fila de retroalimentação

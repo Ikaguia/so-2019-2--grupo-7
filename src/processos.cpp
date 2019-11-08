@@ -14,7 +14,10 @@ Processo::Processo(const string &line){
 	in >> this->scanner >> c;
 	in >> this->modem >> c;
 	in >> this->disco;
-
+  assert(this->t_proc > 0);
+  assert(this->blocos > 0);
+  assert(this->prioridade >= 0 and this->prioridade < 4);
+  assert(this->t_init >= 0);
 	//fila de prioridade com os Processos, para serem adicionados no tempo correto
 	Processos::not_initialized.emplace(-this->t_init, this->pid);
 }
@@ -37,6 +40,15 @@ void Processo::inicializa() {
 
   //Seta o estado
   this->estado = Processo::Estado::PRONTO;
+  // prioridade de usuario pertence a [1, 3]
+  // Insere na fila de pronto
+  if(this->prioridade) {
+    Filas::usuario[this->prioridade-1].push(pid);
+  }
+  else {
+    Filas::tempo_real.push(pid);
+  }
+
 }
 
 
@@ -73,9 +85,10 @@ void Processo::termina(){
 }
 
 bool Processo::executa(){
-	cout << "Executando " << this->to_str() << "\n";
+  assert(this->exec <= this->t_proc);
 	assert(this->estado == Processo::Estado::PRONTO);
 	this->exec++;
+	cout << "Executando " << this->to_str() << "\n";
 	if(this->exec == this->t_proc)
     this->termina();
   return this->estado == Processo::Estado::TERMINOU;
@@ -85,7 +98,7 @@ bool Processo::executa(){
 
 vector<Processo> Processos::proc;
 priority_queue<pair<int, int>> Processos::not_initialized;
-priority_queue<pair<int, int>> Processos::bloqueados;
+set<pair<int, int>> Processos::bloqueados;
 
 void Processos::le_arquivo(const string &nome_arquivo){
 	ifstream arquivo(nome_arquivo);
@@ -105,12 +118,6 @@ void Processos::adiciona(){
     }
     else {
       processo.inicializa();
-      if(processo.prioridade) {
-        Filas::usuario[processo.prioridade-1].push(pid);
-      }
-      else {
-        Filas::tempo_real.push(pid);
-      }
     }
 
 	}

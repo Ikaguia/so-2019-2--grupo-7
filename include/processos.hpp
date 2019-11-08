@@ -33,7 +33,8 @@ struct Processos{
 public:
 	static const int MAX_PROCESSOS = 1000;
 	static vector<Processo> proc;
-	static priority_queue<pair<int, int>> not_initialized, bloqueados;
+	static priority_queue<pair<int, int>> not_initialized;
+	static set<pair<int, int>> bloqueados;
 
 	/// Inicializa fila de processos
 	static void le_arquivo(const string &nome_arquivo);
