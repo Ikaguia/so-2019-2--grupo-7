@@ -1,8 +1,8 @@
-#include <processos.hpp>
-#include <filas.hpp>
+#include <Processos.hpp>
+#include <Filas.hpp>
 
-processo::processo(const string &line){
-	pid = processos::v.size();
+Processo::Processo(const string &line){
+	pid = Processos::proc.size();
 	char c;
 	istringstream in(line);
 	in >> t_init >> c;
@@ -14,11 +14,11 @@ processo::processo(const string &line){
 	in >> modem >> c;
 	in >> disco;
 
-	//fila de prioridade com os processos, para serem adicionados no tempo correto
-	processos::pq.emplace(-t_init, pid);
+	//fila de prioridade com os Processos, para serem adicionados no tempo correto
+	Processos::pq.emplace(-t_init, pid);
 }
 
-string processo::to_str(){
+string Processo::to_str(){
 	ostringstream str;
 	str << "{ pid::" << pid;
 	if(not prioridade) str << ", prioridade::tempo_real";
@@ -27,7 +27,7 @@ string processo::to_str(){
 	return str.str();
 }
 
-bool processo::executa(){
+bool Processo::executa(){
 	exec++;
 	cout << "Executando " << this->to_str() << "\n";
 	return (exec == t_proc);
@@ -35,29 +35,29 @@ bool processo::executa(){
 
 
 
-vector<processo> processos::v;
-priority_queue<pair<int, int>> processos::pq;
-void processos::le_arquivo(const string &nome_arquivo){
+vector<Processo> Processos::proc;
+priority_queue<pair<int, int>> Processos::pq;
+void Processos::le_arquivo(const string &nome_arquivo){
 	ifstream arquivo(nome_arquivo);
 	string linha;
-	while(getline(arquivo, linha)) v.emplace_back(linha);
+	while(getline(arquivo, linha)) proc.emplace_back(linha);
 }
-void processos::adiciona(int tempo){
+void Processos::adiciona(int tempo){
 	while(not pq.empty() and (-pq.top().first) <= tempo){
 		int pid = pq.top().second;
 		pq.pop();
 
-		cout << tempo << " Inicializando " << processos::v[pid].to_str() << endl;
+		cout << tempo << " Inicializando " << Processos::proc[pid].to_str() << endl;
 
-		int processos = filas::tempo_real.size();
-		FOR(i, 0, 3) processos += filas::usuario[i].size();
+		int Processos = Filas::tempo_real.size();
+		FOR(i, 0, 3) Processos += Filas::usuario[i].size();
 
-		if(processos >= processos::MAX_PROCESSOS){
-			cout << tempo << " Erro: Não há espaço nas fila de pronto (" << processos::MAX_PROCESSOS << "/" << processos::MAX_PROCESSOS << ")" << endl;
+		if(Processos >= Processos::MAX_PROCESSOS){
+			cout << tempo << " Erro: Não há espaço nas fila de pronto (" << Processos::MAX_PROCESSOS << "/" << Processos::MAX_PROCESSOS << ")" << endl;
 			continue;
 		}
 
-		if(v[pid].prioridade) filas::usuario[v[pid].prioridade-1].push(pid);
-		else filas::tempo_real.push(pid);
+		if(Processos::proc[pid].prioridade) Filas::usuario[Processos::proc[pid].prioridade-1].push(pid);
+		else Filas::tempo_real.push(pid);
 	}
 }
