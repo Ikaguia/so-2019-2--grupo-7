@@ -1,59 +1,59 @@
 #include <memoria.hpp>
 
 namespace Memoria{
-	list<pair<int, int>> mem[2];
+	list<pair<int, int>> intervalos[2];
 	void Init(){
-		mem[TEMPO_REAL].emplace_back(64, -1);
-		mem[USUARIO].emplace_back(960, -1);
+		intervalos[TEMPO_REAL].emplace_back(64, -1);
+		intervalos[USUARIO].emplace_back(960, -1);
 	}
 	int AlocaBloco(int tamanho, Tipo tipo, int pid){
 		int posicao = 0;
-		for(auto it = mem[tipo].begin(); it != mem[tipo].end(); it++){
-			pair<int, int> &bloco = *it;
+		for(auto it = intervalos[tipo].begin(); it != intervalos[tipo].end(); it++){
+			pair<int, int> &intervalo = *it;
 
-			// bloco do tamanho necessário e desocupado
-			if(bloco.first >= tamanho and bloco.second == -1){
-				if(bloco.first == tamanho) bloco.second = pid;
+			// intervalo do tamanho necessário e desocupado
+			if(intervalo.first >= tamanho and intervalo.second == -1){
+				if(intervalo.first == tamanho) intervalo.second = pid;
 				else{
-					// se o tamanho não for exato, cria um novo bloco antes do encontrado
-					mem[tipo].emplace(it, tamanho, pid);
-					bloco.first -= tamanho;
+					// se o tamanho não for exato, cria um novo intervalo antes do encontrado
+					intervalos[tipo].emplace(it, tamanho, pid);
+					intervalo.first -= tamanho;
 				}
 				return posicao;
 			}
-			posicao += bloco.first;
+			posicao += intervalo.first;
 		}
 		return -1;
 	}
 	void DesalocaBloco(int posicao, Tipo tipo, int pid){
 		int posicao_atual = 0;
-		for(auto it = mem[tipo].begin(); it != mem[tipo].end(); it++){
-			pair<int, int> &bloco = *it;
+		for(auto it = intervalos[tipo].begin(); it != intervalos[tipo].end(); it++){
+			pair<int, int> &intervalo = *it;
 			if(posicao == posicao_atual){
-				assert(bloco.second == pid); //bloco está reservado para esse processo
-				bloco.second = -1;
+				assert(intervalo.second == pid); //intervalo está reservado para esse processo
+				intervalo.second = -1;
 
-				//assimila o próximo bloco se ele não estiver ocupado
+				// merge blocos consecutivos sem dono
+				// intervalo posterior
 				auto it_next = next(it);
-				if(it_next != mem[tipo].end()){
+				if(it_next != intervalos[tipo].end()){
 					if(it_next->second == -1){
-						bloco.first += it_next->first;
-						mem[tipo].erase(it_next);
+						intervalo.first += it_next->first;
+						intervalos[tipo].erase(it_next);
 					}
 				}
-
-				//assimila o bloco anterior se ele não estiver ocupado
-				if(it != mem[tipo].begin()){
+				// intervalo anterior
+				if(it != intervalos[tipo].begin()){
 					auto it_prev = prev(it);
 					if(it_prev->second == -1){
-						bloco.first += it_prev->first;
-						mem[tipo].erase(it_prev);
+						intervalo.first += it_prev->first;
+						intervalos[tipo].erase(it_prev);
 					}
 				}
 
 				return;
 			}
-			posicao_atual += bloco.first;
+			posicao_atual += intervalo.first;
 		}
 	}
 };
