@@ -19,19 +19,19 @@ int main(int argc, char **argv){
 	int processo_atual = -1;
 	queue<int> *fila_retro = nullptr;
 
-	FOR(tempo, 0, 1000000000){
+	for(; tempo_execucao < 1000000000; tempo_execucao++){
 		//verifica se tem Processos que são inicializados no tempo atual
-		Processos::adiciona(tempo);
+		Processos::adiciona();
 		if(processo_atual == -1){//se o ultimo Processo foi interrompido
 			//Processo a ser executado, fila onde ele vai ser retroalimentado
 			tie(processo_atual, fila_retro) = Filas::proximo();
 		}
 		if(processo_atual == -1){//não tem Processo na fila de prontos
 			if(Processos::pq.empty()) break;//não tem Processos com tempo de inicialização maior que o atual
-			else cout << tempo << " IDLE\n";
+			else cout << tempo_execucao << " IDLE\n";
 		}
 		else{
-			cout << tempo << " ";
+			cout << tempo_execucao << " ";
 			//executa o Processo atual, e verifica se ele terminuou
 			bool acabou = Processos::proc[processo_atual].executa();
 			if(acabou){

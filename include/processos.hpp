@@ -16,7 +16,7 @@ struct Processo{
 
 	// Caso funcione, aloca recursos e retorna true.
 	// Retorna false caso contrário
-	bool inicializa(int tempo);
+	bool inicializa();
 
 	// Desaloca os recursos
 	void termina();
@@ -37,7 +37,7 @@ public:
 	static void le_arquivo(const string &nome_arquivo);
 
 	// Inclui processos que comecariam no tempo.
-	static void adiciona(int tempo);
+	static void adiciona();
 };
 
 #endif//MODULO_PROCESSOS

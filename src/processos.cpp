@@ -30,14 +30,14 @@ string Processo::to_str(){
 	return str.str();
 }
 
-bool Processo::inicializa(int tempo){
-	cout << tempo << " Inicializando " << this->to_str() << endl;
+bool Processo::inicializa(){
+	cout << tempo_execucao << " Inicializando " << this->to_str() << endl;
 
 	//Checa se há espaço nas filas de pronto
 	int processos_count = Filas::tempo_real.size();
 	FOR(i, 0, 3) processos_count += Filas::usuario[i].size();
 	if(processos_count >= Processos::MAX_PROCESSOS){
-		cout << tempo << " Erro: Não há espaço nas filas de pronto (" << Processos::MAX_PROCESSOS
+		cout << tempo_execucao << " Erro: Não há espaço nas filas de pronto (" << Processos::MAX_PROCESSOS
 			<< "/" << Processos::MAX_PROCESSOS << ")" << endl;
 		return false;
 	}
@@ -45,7 +45,7 @@ bool Processo::inicializa(int tempo){
 	this->endereco = Memoria::aloca_intervalo(this->blocos,
 		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL, pid);
 	if(this->endereco == -1){
-		cout << tempo << " Erro: Não há memória suficiente disponível." << endl;
+		cout << tempo_execucao << " Erro: Não há memória suficiente disponível." << endl;
 		return false;
 	}
 	//Seta o estado
@@ -58,7 +58,7 @@ void Processo::termina(){
 	Memoria::desaloca_intervalo(this->endereco,
 		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL, this->pid);
 	endereco = -1;
-
+  cout << tempo_execucao << " Terminando processo " << this->pid << endl;
 	//Seta o estado
 	this->estado = Processo::Estado::TERMINOU;
 }
@@ -67,7 +67,9 @@ bool Processo::executa(){
 	assert(this->estado == Processo::Estado::PRONTO);
 	this->exec++;
 	cout << "Executando " << this->to_str() << "\n";
-	return (this->exec == this->t_proc);
+	if(this->exec == this->t_proc)
+    this->termina();
+  return this->estado == Processo::Estado::TERMINOU;
 }
 
 
@@ -79,14 +81,14 @@ void Processos::le_arquivo(const string &nome_arquivo){
 	string linha;
 	while(getline(arquivo, linha)) proc.emplace_back(linha);
 }
-void Processos::adiciona(int tempo){
-	while(not pq.empty() and (-pq.top().first) <= tempo){
+void Processos::adiciona(){
+	while(not pq.empty() and (-pq.top().first) <= tempo_execucao){
 		int pid = pq.top().second;
 		pq.pop();
 
 		auto &processo = Processos::proc[pid];
 
-		if(not processo.inicializa(tempo)) continue;
+		if(not processo.inicializa()) continue;
 
 		if(processo.prioridade) Filas::usuario[processo.prioridade-1].push(pid);
 		else Filas::tempo_real.push(pid);

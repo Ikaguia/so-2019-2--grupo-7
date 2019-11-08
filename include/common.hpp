@@ -13,4 +13,6 @@ using uint = unsigned int;
 
 bool file_exists(const string &file_path);
 
+extern int tempo_execucao;
+
 #endif//MODULO_COMMON
