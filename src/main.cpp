@@ -8,7 +8,12 @@ int main(int argc, char **argv){
 	if(not file_exists(argv[1])) return cout << "ERRO: Arquivo invalido '" << string(argv[1]) << "'\n", 1;
 	if(not file_exists(argv[2])) return cout << "ERRO: Arquivo invalido '" << string(argv[2]) << "'\n", 1;
 
+
+
 	Processos::le_arquivo(argv[1]);
+	Memoria::init();
+
+
 
 	int processo_atual = -1;
 	queue<int> *fila_retro = nullptr;

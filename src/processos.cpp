@@ -2,20 +2,20 @@
 #include <filas.hpp>
 
 Processo::Processo(const string &line){
-	pid = Processos::proc.size();
+	this->pid = Processos::proc.size();
 	char c;
 	istringstream in(line);
-	in >> t_init >> c;
-	in >> prioridade >> c;
-	in >> t_proc >> c;
-	in >> blocos >> c;
-	in >> impressora >> c;
-	in >> scanner >> c;
-	in >> modem >> c;
-	in >> disco;
+	in >> this->t_init >> c;
+	in >> this->prioridade >> c;
+	in >> this->t_proc >> c;
+	in >> this->blocos >> c;
+	in >> this->impressora >> c;
+	in >> this->scanner >> c;
+	in >> this->modem >> c;
+	in >> this->disco;
 
 	//fila de prioridade com os Processos, para serem adicionados no tempo correto
-	Processos::pq.emplace(-t_init, pid);
+	Processos::pq.emplace(-this->t_init, this->pid);
 }
 
 string Processo::to_str(){
@@ -27,10 +27,44 @@ string Processo::to_str(){
 	return str.str();
 }
 
+void Processo::inicializa(){
+	cout << tempo << " Inicializando " << this->to_str() << endl;
+
+	//Checa se há espaço nas filas de pronto
+	int processos_count = Filas::tempo_real.size();
+	FOR(i, 0, 3) processos_count += Filas::usuario[i].size();
+	if(processos_count >= Processos::MAX_PROCESSOS){
+		cout << tempo << " Erro: Não há espaço nas filas de pronto (" << Processos::MAX_PROCESSOS
+			<< "/" << Processos::MAX_PROCESSOS << ")" << endl;
+		return false;
+	}
+	//Checa se há memória disponível
+	this->endereco = Memoria::aloca_intervalo(this->blocos,
+		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL, pid);
+	if(this->endereco == -1){
+		cout << tempo << " Erro: Não há memória suficiente disponível." << endl;
+		return false;
+	}
+	//Seta o estado
+	this->estado = Processo::Estado::PRONTO;
+
+	return true;
+}
+void Processo::termina(){
+	//Libera a memória
+	Memoria::desaloca_intervalo(this->endereco,
+		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL, this->pid);
+	endereco = -1;
+
+	//Seta o estado
+	this->estado = Processo::Estado::TERMINOU;
+}
+
 bool Processo::executa(){
-	exec++;
+	assert(this->estado == Processo::Estado::PRONTO);
+	this->exec++;
 	cout << "Executando " << this->to_str() << "\n";
-	return (exec == t_proc);
+	return (this->exec == this->t_proc);
 }
 
 
@@ -47,17 +81,11 @@ void Processos::adiciona(int tempo){
 		int pid = pq.top().second;
 		pq.pop();
 
-		cout << tempo << " Inicializando " << Processos::proc[pid].to_str() << endl;
+		auto &processo = Processos::proc[pid];
 
-		int Processos = Filas::tempo_real.size();
-		FOR(i, 0, 3) Processos += Filas::usuario[i].size();
+		if(not processo.inicializa()) continue;
 
-		if(Processos >= Processos::MAX_PROCESSOS){
-			cout << tempo << " Erro: Não há espaço nas fila de pronto (" << Processos::MAX_PROCESSOS << "/" << Processos::MAX_PROCESSOS << ")" << endl;
-			continue;
-		}
-
-		if(Processos::proc[pid].prioridade) Filas::usuario[Processos::proc[pid].prioridade-1].push(pid);
+		if(processo.prioridade) Filas::usuario[processo.prioridade-1].push(pid);
 		else Filas::tempo_real.push(pid);
 	}
 }

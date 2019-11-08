@@ -2,11 +2,11 @@
 
 namespace Memoria{
 	list<pair<int, int>> intervalos[2];
-	void Init(){
+	void init(){
 		intervalos[TEMPO_REAL].emplace_back(64, -1);
 		intervalos[USUARIO].emplace_back(960, -1);
 	}
-	int AlocaBloco(int tamanho, Tipo tipo, int pid){
+	int aloca_intervalo(int tamanho, Tipo tipo, int pid){
 		int posicao = 0;
 		for(auto it = intervalos[tipo].begin(); it != intervalos[tipo].end(); it++){
 			pair<int, int> &intervalo = *it;
@@ -25,7 +25,7 @@ namespace Memoria{
 		}
 		return -1;
 	}
-	void DesalocaBloco(int posicao, Tipo tipo, int pid){
+	void desaloca_intervalo(int posicao, Tipo tipo, int pid){
 		int posicao_atual = 0;
 		for(auto it = intervalos[tipo].begin(); it != intervalos[tipo].end(); it++){
 			pair<int, int> &intervalo = *it;
