@@ -1,6 +1,7 @@
 #include <common.hpp>
 #include <filas.hpp>
 #include <processos.hpp>
+#include <memoria.hpp>
 
 int main(int argc, char **argv){
 

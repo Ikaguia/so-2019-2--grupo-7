@@ -16,7 +16,7 @@ struct Processo{
 
 	// Caso funcione, aloca recursos e retorna true.
 	// Retorna false caso contrário
-	bool inicializa();
+	bool inicializa(int tempo);
 
 	// Desaloca os recursos
 	void termina();

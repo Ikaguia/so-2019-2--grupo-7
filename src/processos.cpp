@@ -1,5 +1,6 @@
 #include <processos.hpp>
 #include <filas.hpp>
+#include <memoria.hpp>
 
 Processo::Processo(const string &line){
 	this->pid = Processos::proc.size();
@@ -23,11 +24,13 @@ string Processo::to_str(){
 	str << "{ pid::" << pid;
 	if(not prioridade) str << ", prioridade::tempo_real";
 	else str << ", prioridade::usuario-" << prioridade-1;
-	str << ", exec::(" << exec << "/" << t_proc << ") }";
+	str << ", exec::(" << exec << "/" << t_proc << ")";
+	str << ", blocos::" << this->blocos;
+	str << " }";
 	return str.str();
 }
 
-void Processo::inicializa(){
+bool Processo::inicializa(int tempo){
 	cout << tempo << " Inicializando " << this->to_str() << endl;
 
 	//Checa se há espaço nas filas de pronto
@@ -83,7 +86,7 @@ void Processos::adiciona(int tempo){
 
 		auto &processo = Processos::proc[pid];
 
-		if(not processo.inicializa()) continue;
+		if(not processo.inicializa(tempo)) continue;
 
 		if(processo.prioridade) Filas::usuario[processo.prioridade-1].push(pid);
 		else Filas::tempo_real.push(pid);
