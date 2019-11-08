@@ -26,17 +26,17 @@ namespace Memoria{
 		}
 		return -1;
 	}
-	int procura_intervalo(int tamanho, Tipo tipo){
+	bool pode_alocar(int tamanho, Tipo tipo){
 		int posicao = 0;
 		for(auto it = intervalos[tipo].begin(); it != intervalos[tipo].end(); it++){
 			pair<int, int> &intervalo = *it;
 			// intervalo do tamanho necessário e desocupado
 			if(intervalo.first >= tamanho and intervalo.second == -1){
-				return posicao;
+				return true;
 			}
 			posicao += intervalo.first;
 		}
-		return -1;
+		return false;
 	}
 	void desaloca_intervalo(int posicao, Tipo tipo, int pid){
 		int posicao_atual = 0;

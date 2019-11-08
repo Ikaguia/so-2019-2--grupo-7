@@ -8,7 +8,7 @@ namespace Memoria{
 	extern list<pair<int, int>> intervalos[2];
 	void init();
 	int aloca_intervalo(int tamanho, Tipo tipo, int pid);
-	int procura_intervalo(int tamanho, Tipo tipo);
+	bool pode_alocar(int tamanho, Tipo tipo);
   void desaloca_intervalo(int posicao, Tipo tipo, int pid);
 
 };

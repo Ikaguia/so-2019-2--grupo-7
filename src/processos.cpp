@@ -63,14 +63,12 @@ bool Processo::pode_inicializar(){
 		return false;
 	}
 	//Checa se há memória disponível
-	int endereco = Memoria::procura_intervalo(this->blocos,
-		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL);
 	
-  if(endereco == -1){
+  
+  if(not Memoria::pode_alocar(this->blocos, this->prioridade ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL)) {
 		cout << tempo_execucao << " pid::" << this->pid << " Erro: Não há memória suficiente disponível." << endl;
 		return false;
 	}
-  // TODO: testar recursos!
 	return true;
 }
 
