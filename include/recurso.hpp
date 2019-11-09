@@ -4,11 +4,18 @@
 #define MODULO_Recurso
 
 namespace Recurso {
-  enum Tipo {SCANNER = 0, IMPRESSORA1, IMPRESSORA2, MODEM, SATA1, SATA2, qtd};
+  enum Tipo {
+    SCANNER = 0,
+    IMPRESSORA1,
+    IMPRESSORA2,
+    SATA1,
+    SATA2,
+    MODEM,
+    qtd};
   extern vector<bool> em_uso;
-  void aloca();
-  bool pode_alocar();
-  void desaloca();  
+  void aloca(Tipo tipo);
+  bool pode_alocar(Tipo tipo);
+  void desaloca(Tipo tipo);  
 };
 
 #endif//MODULO_Recurso

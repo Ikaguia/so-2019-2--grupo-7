@@ -1,6 +1,7 @@
 #include <processos.hpp>
 #include <filas.hpp>
 #include <memoria.hpp>
+#include <recurso.hpp>
 
 Processo::Processo(const string &line){
 	this->pid = Processos::proc.size();
@@ -31,6 +32,7 @@ string Processo::to_str(){
 	else str << ", prioridade::usuario-" << prioridade-1;
 	str << ", exec::(" << exec << "/" << t_proc << ")";
 	str << ", blocos::" << this->blocos;
+	str << ", impressora::" << this->impressora;
 	str << " }";
 	return str.str();
 }
@@ -40,7 +42,10 @@ void Processo::inicializa() {
 	cout << tempo_execucao << " Inicializando " << this->to_str() << endl;
 	this->endereco = Memoria::aloca_intervalo(this->blocos,
 		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL, pid);
-
+  if(this->impressora) {
+    if(this->impressora == 1) Recurso::aloca(Recurso::Tipo::IMPRESSORA1);
+    else if(this->impressora == 2) Recurso::aloca(Recurso::Tipo::IMPRESSORA2);
+  }
   //Seta o estado
   this->estado = Processo::Estado::PRONTO;
   // prioridade de usuario pertence a [1, 3]
@@ -72,6 +77,14 @@ bool Processo::pode_inicializar(){
 		cout << tempo_execucao << " pid::" << this->pid << " Erro: Não há memória suficiente disponível." << endl;
 		return false;
 	}
+  if(this->impressora) {
+    if(this->impressora == 1 and Recurso::pode_alocar(Recurso::Tipo::IMPRESSORA1));
+    else if(this->impressora == 2 and Recurso::pode_alocar(Recurso::Tipo::IMPRESSORA2));
+    else {
+      // cout << "Impressora 1 ou 2 ocupada!\n";
+      return false;
+    }
+  }
   // if
   // TODO: checar disponibilidade dos outros Recurso
 	return true;
@@ -82,6 +95,11 @@ void Processo::termina(){
 	Memoria::desaloca_intervalo(this->endereco,
 		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL, this->pid);
 	endereco = -1;
+  if(this->impressora) {
+    if(this->impressora == 1) Recurso::desaloca(Recurso::Tipo::IMPRESSORA1);
+    else if(this->impressora == 2) Recurso::desaloca(Recurso::Tipo::IMPRESSORA2);
+  }
+  
   cout << tempo_execucao << " Terminando processo " << this->pid << endl;
 	//Seta o estado
 	this->estado = Processo::Estado::TERMINOU;
