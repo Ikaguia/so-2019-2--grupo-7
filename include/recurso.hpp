@@ -1,9 +1,9 @@
 #include <common.hpp>
 
-#ifndef MODULO_RECURSOS
-#define MODULO_RECURSOS
+#ifndef MODULO_Recurso
+#define MODULO_Recurso
 
-namespace Recursos {
+namespace Recurso {
   enum Tipo {SCANNER = 0, IMPRESSORA1, IMPRESSORA2, MODEM, SATA1, SATA2, qtd};
   extern vector<bool> em_uso;
   void aloca();
@@ -11,4 +11,4 @@ namespace Recursos {
   void desaloca();  
 };
 
-#endif//MODULO_RECURSOS
+#endif//MODULO_Recurso

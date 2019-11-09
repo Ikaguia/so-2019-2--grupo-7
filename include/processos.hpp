@@ -14,13 +14,13 @@ struct Processo{
 	/// Para debug.
 	string to_str();
 
-	// Aloca recursos.	
+	// Aloca Recurso.	
 	void inicializa();
 
-  // Checa se tem todos os recursos disponiveis para uso
+  // Checa se tem todos os Recurso disponiveis para uso
   bool pode_inicializar();
 
-	// Desaloca os recursos
+	// Desaloca os Recurso
 	void termina();
 
 	// Simula execucao do processo por um quantum.

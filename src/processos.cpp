@@ -51,7 +51,6 @@ void Processo::inicializa() {
   else {
     Filas::tempo_real.push(pid);
   }
-
 }
 
 
@@ -74,7 +73,7 @@ bool Processo::pode_inicializar(){
 		return false;
 	}
   // if
-  // TODO: checar disponibilidade dos outros recursos
+  // TODO: checar disponibilidade dos outros Recurso
 	return true;
 }
 
