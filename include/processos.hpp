@@ -25,6 +25,7 @@ struct Processo{
 
 	// Simula execucao do processo por um quantum.
 	bool executa();
+  bool impossivel_inicializar();
 };
 
 

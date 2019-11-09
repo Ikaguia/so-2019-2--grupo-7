@@ -18,8 +18,10 @@ Processo::Processo(const string &line){
   assert(this->blocos > 0);
   assert(this->prioridade >= 0 and this->prioridade < 4);
   assert(this->t_init >= 0);
-	//fila de prioridade com os Processos, para serem adicionados no tempo correto
-	Processos::not_initialized.emplace(-this->t_init, this->pid);
+	//fila de prioridade com os Processos, para serem adicionados no tempo correto	
+  Processos::not_initialized.emplace(-this->t_init, this->pid);
+  if(this->impossivel_inicializar())
+    cout << "IMPOSSIVEL INICIALIZAR: " << this->to_str() << endl;
 }
 
 string Processo::to_str(){
@@ -34,6 +36,7 @@ string Processo::to_str(){
 }
 
 void Processo::inicializa() {
+	assert(this->impossivel_inicializar() == false);
 	cout << tempo_execucao << " Inicializando " << this->to_str() << endl;
 	this->endereco = Memoria::aloca_intervalo(this->blocos,
 		(this->prioridade) ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL, pid);
@@ -53,6 +56,7 @@ void Processo::inicializa() {
 
 
 bool Processo::pode_inicializar(){
+  if(impossivel_inicializar()) return false;
 
 	//Checa se há espaço nas filas de pronto
 	int processos_count = Filas::tempo_real.size();
@@ -69,6 +73,8 @@ bool Processo::pode_inicializar(){
 		cout << tempo_execucao << " pid::" << this->pid << " Erro: Não há memória suficiente disponível." << endl;
 		return false;
 	}
+  // if
+  // TODO: checar disponibilidade dos outros recursos
 	return true;
 }
 
@@ -92,7 +98,14 @@ bool Processo::executa(){
   return this->estado == Processo::Estado::TERMINOU;
 }
 
-
+bool Processo::impossivel_inicializar() {
+  if(not this->prioridade) {
+    return this->blocos > Memoria::LIMITES::TEMPO_REAL;
+  }
+  else {
+    return this->blocos > Memoria::LIMITES::USUARIO;
+  }
+}
 
 vector<Processo> Processos::proc;
 priority_queue<pair<int, int>> Processos::not_initialized;
@@ -117,6 +130,5 @@ void Processos::adiciona(){
     else {
       processo.inicializa();
     }
-
 	}
 }
