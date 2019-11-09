@@ -109,7 +109,7 @@ bool Processo::executa(){
   assert(this->exec <= this->t_proc);
 	assert(this->estado == Processo::Estado::PRONTO);
 	this->exec++;
-	cout << "Executando " << this->to_str() << "\n";
+	cout << "Executando \t" << this->to_str() << "\n";
 	if(this->exec == this->t_proc)
     this->termina();
   return this->estado == Processo::Estado::TERMINOU;
