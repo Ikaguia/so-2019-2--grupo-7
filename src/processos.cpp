@@ -48,9 +48,17 @@ void Processo::inicializa() {
     else if(this->impressora == 2) Recurso::aloca(Recurso::Tipo::IMPRESSORA2);
   }
   if(this->disco) {
-    cout << pid << " [pid] vai usar disco " << this->disco << endl;
+    // cout << pid << " [pid] vai usar disco " << this->disco << endl;
     if(this->disco == 1) Recurso::aloca(Recurso::Tipo::SATA1);
     else if(this->disco == 2) Recurso::aloca(Recurso::Tipo::SATA2);
+  }
+  if(this->modem) {
+    cout << pid << " [pid] vai usar modem " << this->modem << endl;
+    Recurso::aloca(Recurso::Tipo::MODEM);
+  }
+  if(this->scanner) {
+    cout << pid << " [pid] vai usar scanner " << this->scanner << endl;
+    Recurso::aloca(Recurso::Tipo::SCANNER);
   }
   //Seta o estado
   this->estado = Processo::Estado::PRONTO;
@@ -76,9 +84,7 @@ bool Processo::pode_inicializar(){
 			<< "/" << Processos::MAX_PROCESSOS << ")" << endl;
 		return false;
 	}
-	//Checa se há memória disponível
 	
-  
   if(not Memoria::pode_alocar(this->blocos, this->prioridade ? Memoria::Tipo::USUARIO : Memoria::Tipo::TEMPO_REAL)) {
 		cout << tempo_execucao << " pid::" << this->pid << " Erro: Não há memória suficiente disponível." << endl;
 		return false;
@@ -93,8 +99,15 @@ bool Processo::pode_inicializar(){
     else if(this->disco == 2 and Recurso::pode_alocar(Recurso::Tipo::SATA2));
     else return false;
   }
-  
-  // TODO: checar disponibilidade dos outros Recurso
+  if(this->modem) {
+    if(Recurso::pode_alocar(Recurso::Tipo::MODEM));
+    else return false;
+  }
+  if(this->scanner) {
+    if(Recurso::pode_alocar(Recurso::Tipo::SCANNER));
+    else return false;
+  }
+  // TODO: testar para moem e scanner
 	return true;
 }
 
@@ -108,9 +121,17 @@ void Processo::termina(){
     else if(this->impressora == 2) Recurso::desaloca(Recurso::Tipo::IMPRESSORA2);
   }
   if(this->disco) {
-    cout << pid << " [pid] vai liberar disco " << this->disco << endl;
+    // cout << pid << " [pid] vai liberar disco " << this->disco << endl;
     if(this->disco == 1) Recurso::desaloca(Recurso::Tipo::SATA1);
     else if(this->disco == 2) Recurso::desaloca(Recurso::Tipo::SATA2);
+  }
+  if(this->modem) {
+    cout << pid << " [pid] vai liberar modem " << this->modem << endl;
+    Recurso::desaloca(Recurso::Tipo::MODEM);
+  }
+  if(this->scanner) {
+    cout << pid << " [pid] vai liberar scanner " << this->scanner << endl;
+    Recurso::desaloca(Recurso::Tipo::SCANNER);
   }
   cout << tempo_execucao << " Terminando processo " << this->pid << endl;
 	//Seta o estado
