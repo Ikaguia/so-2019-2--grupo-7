@@ -3,8 +3,8 @@
 namespace Memoria{
 	list<pair<int, int>> intervalos[2];
 	void init(){
-		intervalos[TEMPO_REAL].emplace_back(64, -1);
-		intervalos[USUARIO].emplace_back(960, -1);
+		intervalos[Memoria::Tipo::TEMPO_REAL].emplace_back(Memoria::LIMITES::TEMPO_REAL, -1);
+		intervalos[Memoria::Tipo::USUARIO].emplace_back(Memoria::LIMITES::USUARIO, -1);
 	}
   // TODO: fazer direito ou apagar esse TODO
 	int aloca_intervalo(int tamanho, Tipo tipo, int pid){
