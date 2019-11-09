@@ -33,6 +33,7 @@ string Processo::to_str(){
 	str << ", exec::(" << exec << "/" << t_proc << ")";
 	str << ", blocos::" << this->blocos;
 	str << ", impressora::" << this->impressora;
+	str << ", disco::" << this->disco;
 	str << " }";
 	return str.str();
 }
@@ -45,6 +46,11 @@ void Processo::inicializa() {
   if(this->impressora) {
     if(this->impressora == 1) Recurso::aloca(Recurso::Tipo::IMPRESSORA1);
     else if(this->impressora == 2) Recurso::aloca(Recurso::Tipo::IMPRESSORA2);
+  }
+  if(this->disco) {
+    cout << pid << " [pid] vai usar disco " << this->disco << endl;
+    if(this->disco == 1) Recurso::aloca(Recurso::Tipo::SATA1);
+    else if(this->disco == 2) Recurso::aloca(Recurso::Tipo::SATA2);
   }
   //Seta o estado
   this->estado = Processo::Estado::PRONTO;
@@ -80,12 +86,14 @@ bool Processo::pode_inicializar(){
   if(this->impressora) {
     if(this->impressora == 1 and Recurso::pode_alocar(Recurso::Tipo::IMPRESSORA1));
     else if(this->impressora == 2 and Recurso::pode_alocar(Recurso::Tipo::IMPRESSORA2));
-    else {
-      // cout << "Impressora 1 ou 2 ocupada!\n";
-      return false;
-    }
+    else return false;
   }
-  // if
+  if(this->disco) {
+    if(this->disco == 1 and Recurso::pode_alocar(Recurso::Tipo::SATA1));
+    else if(this->disco == 2 and Recurso::pode_alocar(Recurso::Tipo::SATA2));
+    else return false;
+  }
+  
   // TODO: checar disponibilidade dos outros Recurso
 	return true;
 }
@@ -99,7 +107,11 @@ void Processo::termina(){
     if(this->impressora == 1) Recurso::desaloca(Recurso::Tipo::IMPRESSORA1);
     else if(this->impressora == 2) Recurso::desaloca(Recurso::Tipo::IMPRESSORA2);
   }
-  
+  if(this->disco) {
+    cout << pid << " [pid] vai liberar disco " << this->disco << endl;
+    if(this->disco == 1) Recurso::desaloca(Recurso::Tipo::SATA1);
+    else if(this->disco == 2) Recurso::desaloca(Recurso::Tipo::SATA2);
+  }
   cout << tempo_execucao << " Terminando processo " << this->pid << endl;
 	//Seta o estado
 	this->estado = Processo::Estado::TERMINOU;
